@@ -1,26 +1,58 @@
 <html>
 
- <head>
-
- </head>
-
  <body>
-  webカメラ開けるか？
-  編集してみた
   <video id="video"></video>
+  <canvas id="canvas"></canvas>
 
   <script type="text/javascript">
-   const video = document.getElementById("video")
-   console.log(video);
 
    window.onload = async () => {
     console.log('loaded');
-    const option = { video: true }
-    const stream = await navigator.mediaDevices.getUserMedia(option)
-    video.srcObject = stream;
-    video.play()
-   }
+    const video = document.getElementById("video")
+    const canvas = document.getElementById("canvas")
+    const ctx = canvas.getContext("2d")
 
+    const option = { video: true }
+    video.srcObject = await navigator.mediaDevices.getUserMedia(option)
+    video.play()
+    let scale = 0;
+
+    video.onloadedmetadata = async () => {
+     console.log("onloadedmeta")
+     canvas.width = video.videoWidth;
+     canvas.height = video.videoHeight;
+     scale = canvas.width / video.videoWidth;
+
+     const loop = () => {
+      ctx.drawImage(video, 0, 0)
+      const start = performance.now();
+      detect();
+      console.log(performance.now() - start)
+      setTimeout(loop, 100)
+     }
+     loop();
+    }
+
+    let faceDetector = undefined;
+    const detect = async () => {
+     if (faceDetector == undefined) {
+      console.log("new FaceDetector()")
+      if (window.FaceDetector == undefined) {
+       console.error('Face Detection not supported');
+       return;
+      }
+      faceDetector = new FaceDetector();
+     }
+     const faces = await faceDetector.detect(video)
+     ctx.lineWidth = 2;
+     ctx.strokeStyle = 'red';
+     for (let face of faces) {
+      const { x, y, width, height } = face.boundingBox
+      ctx.strokeRect(x, y, width, height)
+      // console.log(face);
+     }
+    }
+   }
   </script>
  </body>
 
