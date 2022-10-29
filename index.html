@@ -7,9 +7,19 @@
  <body>
   webカメラ開けるか？
   編集してみた
+  <video id="video"></video>
 
   <script type="text/javascript">
-   console.log('hello');
+   const video = document.getElementById("video")
+   console.log(video);
+
+   window.onload = async () => {
+    console.log('loaded');
+    const option = { video: true }
+    const stream = await navigator.mediaDevices.getUserMedia(option)
+    video.srcObject = stream;
+    video.play()
+   }
 
   </script>
  </body>
