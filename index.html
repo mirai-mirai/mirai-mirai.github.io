@@ -1,7 +1,9 @@
 <html>
 
  <body>
-  <div id="logArea"></div>
+  <div id="logArea">
+   <h1>スクリプト読み込み中</h1>
+  </div>
   <video id="video"></video>
   <br>
   <canvas id="canvas"></canvas>
@@ -40,7 +42,7 @@
     video.onloadedmetadata = async () => {
      canvas.width = video.videoWidth;
      canvas.height = video.videoHeight;
-     logArea.innerText = `映像サイズ：${canvas.width} x ${canvas.height}`
+     logArea.innerText = `カメラ映像サイズ：${canvas.width} x ${canvas.height}`
 
      const loop = () => {
       detect();
