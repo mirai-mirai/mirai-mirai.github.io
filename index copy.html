@@ -1,0 +1,67 @@
+<html>
+
+ <body>
+  <video id="video"></video>
+  <br>
+  <canvas id="canvas"></canvas>
+  <canvas id="canvas2"></canvas>
+
+  <script type="text/javascript">
+
+   window.onload = async () => {
+    const video = document.getElementById("video")
+    const canvas = document.getElementById("canvas")
+    const canvas2 = document.getElementById("canvas2")
+    const ctx = canvas.getContext("2d")
+    const ctx2 = canvas2.getContext("2d")
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'red';
+
+    const option = { video: true }
+    video.srcObject = await navigator.mediaDevices.getUserMedia(option)
+    video.play()
+
+    video.onloadedmetadata = async () => {
+     canvas.width = video.videoWidth;
+     canvas.height = video.videoHeight;
+
+     const loop = () => {
+      const start = performance.now();
+      detect();
+      console.log(performance.now() - start)
+      setTimeout(loop, 100)
+     }
+     loop();
+    }
+
+    let faceDetector = undefined;
+    const detect = async () => {
+     if (faceDetector == undefined) {
+      console.log("new FaceDetector()")
+      if (window.FaceDetector == undefined) {
+       console.error('Face Detection not supported');
+       return;
+      }
+      faceDetector = new FaceDetector();
+     }
+     const faces = await faceDetector.detect(video)
+     ctx.drawImage(video, 0, 0)
+     ctx.lineWidth = 2;
+     ctx.strokeStyle = 'red';
+     let idx = 0
+     for (let face of faces) {
+      const { x, y, width, height } = face.boundingBox
+      ctx.strokeRect(x, y, width, height)
+      if (idx == 0) {
+       const mouthImg = ctx.getImageData(x + width / 4, y + height / 2, width / 2, height / 2)
+       ctx2.clearRect(0, 0, canvas.width, canvas.height);
+       ctx2.putImageData(mouthImg, 0, 0)
+      }
+      idx++
+     }
+    }
+   }
+  </script>
+ </body>
+
+</html>
