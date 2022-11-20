@@ -4,8 +4,7 @@
   <div id="logArea">
    <h1>スクリプト読み込み中</h1>
   </div>
-  <video id="video"></video>
-  <br>
+  <video id="video"></video> <br>
   <canvas id="canvas"></canvas>
   <canvas id="canvas2"></canvas>
 
@@ -16,7 +15,6 @@
 
   <script type="text/javascript">
 
-
    const model = faceDetection.SupportedModels.MediaPipeFaceDetector;
    const detectorConfig = {
     runtime: 'mediapipe',
@@ -25,7 +23,6 @@
 
    const main = async () => {
     const detector = await faceDetection.createDetector(model, detectorConfig);
-
     const logArea = document.getElementById("logArea")
     const video = document.getElementById("video")
     const canvas = document.getElementById("canvas")
@@ -70,15 +67,11 @@
        }
        idx++
       }
-
      }
-
      loop();
     }
    }
-
    window.onload = main
-
   </script>
  </body>
 

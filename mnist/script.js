@@ -1,5 +1,3 @@
-console.log('Hello');
-
 import { MnistData } from './data.js';
 
 async function showExamples(data) {
@@ -23,7 +21,6 @@ async function showExamples(data) {
   canvas.style = 'margin: 4px;';
   await tf.browser.toPixels(imageTensor, canvas);
   surface.drawArea.appendChild(canvas);
-
   imageTensor.dispose();
  }
 }
@@ -37,19 +34,14 @@ async function run() {
  tfvis.show.modelSummary({ name: 'Model Architecture', tab: 'Model' }, model);
 
  await train(model, data);
-
  await showAccuracy(model, data);
  await showConfusion(model, data);
-
-
 }
 
 document.addEventListener('DOMContentLoaded', run);
 
-
 function getModel() {
  const model = tf.sequential();
-
  const IMAGE_WIDTH = 28;
  const IMAGE_HEIGHT = 28;
  const IMAGE_CHANNELS = 1;
