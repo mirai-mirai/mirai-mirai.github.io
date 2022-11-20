@@ -1,0 +1,66 @@
+<html>
+
+ <body>
+  <h1>TensorFlow.jsで顔検知</h1>
+  <video id="video"></video> <br>
+  <canvas id="canvas"></canvas>
+  <div id="logArea">読み込み中...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_detection"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/face-detection"></script>
+
+  <script type="text/javascript">
+
+   const model = faceDetection.SupportedModels.MediaPipeFaceDetector;
+   const detectorConfig = {
+    runtime: 'mediapipe',
+    solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_detection',
+   };
+
+   const main = async () => {
+    const detector = await faceDetection.createDetector(model, detectorConfig);
+    const logArea = document.getElementById("logArea")
+    const video = document.getElementById("video")
+    const canvas = document.getElementById("canvas")
+    const ctx = canvas.getContext("2d")
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'red';
+
+    const option = { video: true }
+    video.srcObject = await navigator.mediaDevices.getUserMedia(option)
+    video.play()
+
+    video.onloadedmetadata = async () => {
+     canvas.width = video.videoWidth;
+     canvas.height = video.videoHeight;
+
+     const loop = () => {
+      detect();
+      setTimeout(loop, 100)
+     }
+
+     const detect = async () => {
+      const start = performance.now();
+      const estimationConfig = { flipHorizontal: false };
+      const faces = await detector.estimateFaces(video, estimationConfig);
+      const time = Math.floor(performance.now() - start);
+      logArea.innerText = `処理時間：${time} msec`
+
+      ctx.drawImage(video, 0, 0)
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'red';
+      for (let face of faces) {
+       const { xMin, yMin, width, height } = face.box
+       ctx.strokeRect(xMin, yMin, width, height)
+      }
+     }
+     loop();
+    }
+   }
+   window.onload = main
+  </script>
+ </body>
+
+</html>
